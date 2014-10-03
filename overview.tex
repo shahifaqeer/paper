@@ -1,0 +1,51 @@
+\section{System overview}
+In this section, we present the system architecture model that will be used to provide per-flow QoS for multiple applications. The proposed solution is a control program that runs in the OpenFlow controller. For the sake of clarity, the different components of the proposed system are presented in Figure NEED FIGURE FOR THIS! %use \ref{fig:WHATEVERFIGUREIS} to get proper links
+
+% SPD - get rid of list?
+The system consists of three main modules: 
+
+\begin{itemize} 
+  \item \emph{Flow Classifiers} --- Two flow classifiers are being used: one handles HTTP and HTTPS flows, while the other handles all other flows.
+  \item \emph{Rate Shaper} --- The rate shapers are responsible for performing the bandwidth limiting function.
+  \item \emph{Graphical User Interface} --- The GUI is the main method for allowing the end-user to configure the bandwidth allocation strategy.   
+\end{itemize}
+
+Each of the following sections describe modules in more detail. This will be approached from the bottom up.
+
+\subsection{Flow Classifiers}
+Flow classification happens in two modules. One module handles all traffic going to HTTP and HTTPS (TCP ports 80 and 443) is handled by the DNS Flow Classification module, while all other traffic is handled by a wrapped version of libprotoident \cite{AlcockLibprotoident2012}. 
+
+libprotoident is a library developed by the WAND Network Research Group at the University of Waikato. This performs application layer protocol identification for flows. It takes as an input the source and destination IP and ports, the IP protocol (e.g., ICMP, TCP, UDP), the first four bytes sent in both directions, and the first payload size in both directions. These inputs are then passed through a series of classifying modules that identify particular types of flows and returns the best match as classification. Each module may only look at a small portion of the inputs, such as just the IP protocol and the destination port.
+
+The DNS Flow Classification module is composed of two parts. The first is a DNS cache and the second does the classification of flows. There is also a configuration file that is used to determine classification. It is list of the pair (regular expression, classification). The regular expression represents the URL of a particular website. This can be user configurable. For example, the URI \linebreak https://www.youtube.com/watch?v=dQw4w9WgXcQ \linebreak would be seen as a video source, so the pattern string \linebreak``*youtube*'' would be classified as ``Video''. 
+
+Upon initialization of the module the DNS cache is empty. The OpenFlow switch is programmed to send all DNS response frames to be sent to the controller. The controller then sends the DNS responses to this module, along with to its final destination. In this module, the DNS responses are parsed. The URI that is contained in the response is compared against the configuration table to see if it can be classified. If it is, then the IP address, time-to-live of the DNS entry, and the classification are put into the cache. 
+
+When a new HTTP/HTTPS flow comes in, the classifier then compares the IP to the IPs in the DNS cache. If it matches, the classification in the DNS cache will be returned. If it does not match, it will be an ``unknown'' flow. This will work, as the DNS request will happen immediately before an HTTP request goes out, so the cached entries will still be valid. There is a hole when a DNS request does not happen, such as when a hosts file is populated with the IP of a particular site. 
+
+
+\subsection{Rate Shaper}
+This is the main component of this solution. It has three main responsibilities: 
+\begin{enumerate}
+  \item To initialize the Open vSwitch components and create the internal virtual topology
+  \item To handle all new incoming flows and dispatch them to the appropriate flow classifier
+  \item To write the OpenFlow flow rules to the Open vSwitch components
+\end{enumerate}
+
+Initialization occurs when a new configuration is created (see Section \ref{sec:GUI}). This is an orchestration function primarily. It creates the two Open vSwitches, connects them to the correct inbound and outbound interfaces and to each other. The inter-switch connections are where the rate-limiting actually happens. Each inter-switch connection is rate limited by tc, the Linux Traffic Control manager, based on the configuration provided by the user. 
+
+Each of these connections represents an application group: video, web, games, etc. When a flow is determined to be a particular application type, it is assigned to flow through the corresponding inter-switch connection, thus rate limiting that type of application.
+
+Each new flow that comes into the eastbound Open vSwitch needs to be classified. The Rate Shaper is responsible for deciding which classifier to use. It does this simply: if the TCP port number is 80 or 443, it is sent to the DNS classifier, otherwise it is sent to libprotoident. For libprotoident, there is an important difference: just one packet in the flow is not enough as it requires data from each direction. In the case of a TCP connection, this means looking at and manually forwarding at least five frames ---the three-way handshake, and the first packets in each direction --- before sending the flow to be classified.
+
+Once a flow is classified, the Rate Shaper is responsible for generating and writing the rules into the Open vSwitch. For this, it refers to the configuration to determine which inter-switch connection, for instance, video traffic belongs on. If there is no rule, it will automatically default to the \emph{other} connection. Additionally, it handles installation of other rules, such as the rules associated with DNS responses. 
+
+Other non-rate shaping behaviors can be created here. For instance, if a user did not want to see advertisements, flows associated with advertisements could be dropped at the switch, providing whole-home ad-blocking.
+
+\subsection{The Graphical User Interface}
+\label{sec:GUI}
+To provide a way for users to easily configure bandwidth profiles for each type of application, a GUI was created. It is a web application that offers the ability to define individual bandwidth profiles, as well as set priorities. Additionally, the ability to monitor the usage on a per-port and per-application basis is provided, such that the end-user can identify heavy bandwidth usage. The GUI's main goal is to create the low-level configuration file that is used by the Rate Shaper module. 
+
+\subsection{Implementation}
+For this implementation, we used an OpenWRT-enabled router along with a Pox SDN controller running on a RaspberryPi. The open Open vSwitch components of the Rate Shaper are running on the OpenWRT-enabled router. The traffic classifiers, the Rate Shaper's decision components, and the GUI's server are running on the RaspberryPi. The end-user's web browser displays the GUI itself.
+

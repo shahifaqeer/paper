@@ -1,0 +1,8 @@
+\section{Future Work}
+The current solution is a python based script running on the client device which performs bandwidth and latency measurements using tools such as iperf. It uses RPC to communicate with the gateway and publishes commands to an open script port on the server device. We perform the analysis offline after collecting data.
+
+Our next step is to test the advanced latency based diagnosis method detailed in section \ref{latency} to gain an understanding of the reason for a wireless bottleneck.
+
+Next, we will port the developed bottleneck detection approach to a browser as an extension, making it highly scalable, and easily installable, on the multitude of heterogeneous devices available in a home network. Further, we aim to evaluate our solution for public wifi networks where there are many competing wireless devices and no access to the wireless gateway at all.
+
+As an extension of our work, we would like to explore the reasons behind a wireless bottleneck and suggest simple solutions to the user if possible. We will start by creating different kinds of wireless and home bottlenecks, such as interference, low power, congestion at the router, and hidden terminals. Then, using additional monitoring antennas at the router, we would like to find if we can detect this, and relate it to the more common case where we have only a second collaborating device. Gaining inspiration from \cite{wlanprobe}  we have started by looking at packet delays at the listener using an approach similar to that presented in Section \ref{latency}.
