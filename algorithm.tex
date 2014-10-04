@@ -8,7 +8,7 @@ Our goal is to detect the home network bottleneck in a scalable, easily installa
 We compare the available TCP bandwidth of individual segments (home, access, end to end) to pinpoint the tight link. Consider that we have an external server to test to, and a wireless test client inside the home. Now, we can perform measurements if either of the two devices are also present: (a) collaborative gateway; (b) user controlled collaborative test device
 
 \textbf{Collaborative Gateway:} which can form an end point for bandwidth measurements
-\begin{itemize}[noitemsep,topsep=0pt,parsep=0pt,partopsep=0pt]
+\begin{itemize}%[noitemsep,topsep=0pt,parsep=0pt,partopsep=0pt]
 \item Measure wireless TCP bandwidth between client and router.
 \item Start measuring access TCP bandwidth between router and client.
 \item Stop measurement as soon as the access throughput exceeds wireless throughput. If this happens, wireless is bottleneck. Else, access is bottleneck.
@@ -16,7 +16,7 @@ We compare the available TCP bandwidth of individual segments (home, access, end
 This algorithm was evaluated in both the testbed and real networks with OpenWRT gateways (Section \ref{evaluation})
 
 \textbf{Collaborative Test Device:} The main idea here is to direct the user to place a control device, such as a smartphone, in the home at a good position ensuring a good wireless throughput, to conduct tests using that device as a reference. %See figure \ref{fig:two-device}
-\begin{itemize}[noitemsep,topsep=0pt,parsep=0pt,partopsep=0pt]
+\begin{itemize}%[noitemsep,topsep=0pt,parsep=0pt,partopsep=0pt]
 \item Place control end host device (B) near home gateway and ensure it has a better throughput than test device (A) to the server (S). Throughput of test device = AS; throughput of control device = BS.
 \item Measure bidirectional wireless bandwidth between test and control devices, i.e. throughput AB (or BA).
 \item If AS < AB, then access link is bottleneck.%If wireless bandwidth between the two devices (AB) exceeds end to end throughput of test device (AS), then access link is the bottleneck. i.e., 
