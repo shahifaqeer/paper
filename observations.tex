@@ -1,0 +1,9 @@
+\section{Observations}
+
+We made some observations during preliminary measurements of home network devices in our testbed. We use these observations to develop bottleneck detection algorithms.
+\begin{itemize}
+\item Comparing TCP bandwidth over the wireless home link and the access link will indicate the bottleneck link observable when a new flow is started between end hosts.
+\item An end to end large TCP flows cause longer delays in the tighter bottleneck link than the non bottleneck one.
+\item For two wireless devices A and B, if the available bandwidth in one direction, BA is greater than the other, AB, then the sender device for the better measurement direction has a better channel to the router than the other device, i.e. B to gateway is better than A to gateway if BA > AB.
+\item Delays caused by 802.11 medium access control are lower than buffering delays caused due to wireless bottlenecks.
+\end{itemize}
