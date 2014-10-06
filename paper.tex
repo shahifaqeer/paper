@@ -6,7 +6,7 @@
 %% Note:  Authors is hardcoded below, this line only used for the PDF info
 \newcommand{\AUTHORS}{Sarthak Grover, Anna-Kaisa Pietilainen, Renata Tiexiera,
 Christian Kreibich, Nick Feamster}
-\newcommand{\TITLE}{Detecting Home Network Bottlenecks}
+\newcommand{\TITLE}{A Collaborative Approach to Detecting Home Network Bottlenecks}
 \newcommand{\KEYWORDS}{Put your keywords here}
 \newcommand{\CONFERENCE}{Somewhere}
 \newcommand{\PAGENUMBERS}{no}       % "yes" or "no"
@@ -329,6 +329,7 @@ Copyright 2014 ACM 978-1-4503-2836-4/14/08 ...\$15.00. \\
 
 \newcommand{\supsym}[1]{\raisebox{4pt}{{\footnotesize #1}}}
 \newcommand{\gt}{\supsym{$\dag$}}
+%\newcommand{\gt}{\supsym{}}
 \newcommand{\inr}{\supsym{$\diamond$}}
 \newcommand{\icsi}{\supsym{$\star$}}
 %\newcommand{\ceq}{\supsym{$\ddag$}}
@@ -344,8 +345,10 @@ Copyright 2014 ACM 978-1-4503-2836-4/14/08 ...\$15.00. \\
 %\vspace*{-0.53in}
 \textbf{\ttlfnt \TITLE}}
 \author{
-\aufnt{Sarthak Grover\gt, Anna-Kaisa Pietilainen\inr, Renata Tiexiera\inr,
-Christian Kreibich\icsi, Nick Feamster\gt} \\
+%\aufnt{Sarthak Grover\gt} \\
+%\gt\affaddr{Georgia Tech}
+\aufnt{Sarthak Grover\gt, Anna-Kaisa Pietilainen\inr, Renata Tiexiera\inr}\\
+\aufnt{Christian Kreibich\icsi, Nick Feamster\gt, ...} \\
 \gt\affaddr{Georgia Tech}~~~\inr\affaddr{INRIA}~~~\icsi\affaddr{ICSI}
 }
 
@@ -383,8 +386,10 @@ Christian Kreibich\icsi, Nick Feamster\gt} \\
 %
 
 \input{introduction}
+\input{observations}
 \input{algorithm}
 \input{results}
+\input{related}
 \balance\input{future}
 %\label{lastpage}
 \end{sloppypar}
